@@ -99,7 +99,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"notebookPath": "/Repos/nahushamane@hotmail.com/aqi-data-engineering-azure/notebooks/1_bronze_to_silver"
+					"notebookPath": "/Users/nahushamane@hotmail.com/aqi-azure-data-engineering/notebooks/1_bronze_to_silver"
 				},
 				"linkedServiceName": {
 					"referenceName": "ls_dbw_aqi_md_dev",
@@ -126,7 +126,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"notebookPath": "/Repos/nahushamane@hotmail.com/aqi-data-engineering-azure/notebooks/2_silver_to_gold"
+					"notebookPath": "/Users/nahushamane@hotmail.com/aqi-azure-data-engineering/notebooks/2_silver_to_gold"
 				},
 				"linkedServiceName": {
 					"referenceName": "ls_dbw_aqi_md_dev",
