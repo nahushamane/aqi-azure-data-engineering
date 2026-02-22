@@ -1,0 +1,17 @@
+{
+	"name": "1_datamart_setup",
+	"properties": {
+		"content": {
+			"query": "-------------------------------------------------------------------------\n-- STEP 1: DATABASE INITIALIZATION\n-------------------------------------------------------------------------\n-- Run this in 'master' first if the database doesn't exist\n-- CREATE DATABASE AQIDATAMART;\n-- GO\n\nUSE AQIDATAMART;\nGO\n\n-------------------------------------------------------------------------\n-- STEP 2: SECURITY & CREDENTIALS\n-------------------------------------------------------------------------\n-- 1. Ensure a Master Key exists for encryption\nIF NOT EXISTS (SELECT * FROM sys.symmetric_keys WHERE name LIKE '%MS_DatabaseMasterKey%')\nBEGIN\n    CREATE MASTER KEY ENCRYPTION BY PASSWORD = 'MSNahushsa7&&';\nEND\nGO\n\n-- 2. Create the Scoped Credential to use the Workspace Managed Identity\nIF NOT EXISTS (SELECT * FROM sys.database_scoped_credentials WHERE name = 'SynapseManagedIdentity')\nBEGIN\n    CREATE DATABASE SCOPED CREDENTIAL [SynapseManagedIdentity] \n    WITH IDENTITY = 'Managed Identity';\nEND\nGO\n\n-- 3. Grant the reference to yourself (dbo) so your login can use the credential\nGRANT REFERENCES ON DATABASE SCOPED CREDENTIAL::[SynapseManagedIdentity] TO [dbo];\nGO\n\n-------------------------------------------------------------------------\n-- STEP 3: EXTERNAL DATA SOURCE\n-------------------------------------------------------------------------\n-- This creates a secure \"bridge\" to your storage account\nIF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'AQI_Gold_Source')\nBEGIN\n    CREATE EXTERNAL DATA SOURCE [AQI_Gold_Source]\n    WITH (\n        LOCATION = 'https://dlaqimddev.dfs.core.windows.net/gold/cpcb_aqi',\n        CREDENTIAL = [SynapseManagedIdentity]\n    );\nEND\nGO\n\n-- Verify the source exists\nSELECT name, location FROM sys.external_data_sources;\n\n-------------------------------------------------------------------------\n-- STEP 4: CREATE OR UPDATE VIEWS (DELTA FORMAT)\n-------------------------------------------------------------------------\n-- Using 'CREATE OR ALTER' ensures existing \"broken\" views are fixed\n\n-- 1. FACT AQI view\nCREATE OR ALTER VIEW vw_Fact_AQI AS\nSELECT * FROM OPENROWSET(\n    BULK 'fact_aqi/',\n    DATA_SOURCE = 'AQI_Gold_Source',\n    FORMAT = 'DELTA'\n) AS [result];\nGO\n\n-- 2. DIMENSION LOCATION view\nCREATE OR ALTER VIEW vw_Dim_Location AS\nSELECT * FROM OPENROWSET(\n    BULK 'dim_location/',\n    DATA_SOURCE = 'AQI_Gold_Source',\n    FORMAT = 'DELTA'\n) AS [result];\nGO\n\n-- 3. DIMENSION POLLUTANT view\nCREATE OR ALTER VIEW vw_Dim_Pollutant AS\nSELECT * FROM OPENROWSET(\n    BULK 'dim_pollutant/',\n    DATA_SOURCE = 'AQI_Gold_Source',\n    FORMAT = 'DELTA'\n) AS [result];\nGO\n\n-------------------------------------------------------------------------\n-- STEP 5: VALIDATION\n-------------------------------------------------------------------------\nSELECT TOP 10 * FROM vw_Fact_AQI;\nSELECT TOP 10 * FROM vw_Dim_Location;\nSELECT TOP 10 * FROM vw_Dim_Pollutant;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "AQIDATAMART",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
