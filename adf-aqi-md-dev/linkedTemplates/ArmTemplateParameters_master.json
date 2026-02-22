@@ -1,0 +1,33 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "adf-aqi-md-dev"
+		},
+		"ls_adls_aqi_medallion_accountKey": {
+			"value": ""
+		},
+		"syn-aqi-md-dev-WorkspaceDefaultSqlServer_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:syn-aqi-md-dev.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
+		},
+		"ls_adls_aqi_medallion_properties_typeProperties_url": {
+			"value": "https://dlaqimddev.dfs.core.windows.net/"
+		},
+		"ls_keyvault_aqi_properties_typeProperties_baseUrl": {
+			"value": "https://kvaqidataprojectdev.vault.azure.net/"
+		},
+		"ls_rest_datagovin_properties_typeProperties_url": {
+			"value": "https://api.data.gov.in"
+		},
+		"syn-aqi-md-dev-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"value": "https://dlaqimddev.dfs.core.windows.net"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
