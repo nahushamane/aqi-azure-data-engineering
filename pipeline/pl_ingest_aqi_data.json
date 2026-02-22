@@ -1,0 +1,141 @@
+{
+	"name": "pl_ingest_aqi_data",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get_API_Key",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": true,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "GET",
+					"url": "https://kvaqidataprojectdev.vault.azure.net/secrets/datagovin-api-key?api-version=7.0",
+					"authentication": {
+						"type": "MSI",
+						"resource": "https://vault.azure.net"
+					}
+				}
+			},
+			{
+				"name": "Copy_AQI_to_Bronze",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Get_API_Key",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "RestSource",
+						"httpRequestTimeout": "00:01:40",
+						"requestInterval": "00.00:00:00.010",
+						"requestMethod": "GET",
+						"paginationRules": {
+							"supportRFC5988": "true"
+						}
+					},
+					"sink": {
+						"type": "JsonSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "JsonWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_rest_aqi",
+						"type": "DatasetReference",
+						"parameters": {
+							"p_relative_url": "@concat('/resource/3b01bcb8-0b14-4abf-b6f2-c1bfd384ba69?api-key=', activity('Get_API_Key').output.value, '&format=json&limit=2000')"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_adls_bronze_json",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Bronze_To_Silver",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "Copy_AQI_to_Bronze",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Repos/nahushamane@hotmail.com/aqi-data-engineering-azure/notebooks/1_bronze_to_silver"
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_dbw_aqi_md_dev",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Silver_To_Gold",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "Bronze_To_Silver",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Repos/nahushamane@hotmail.com/aqi-data-engineering-azure/notebooks/2_silver_to_gold"
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_dbw_aqi_md_dev",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2026-02-22T15:50:15Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

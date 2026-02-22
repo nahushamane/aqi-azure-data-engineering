@@ -1,0 +1,35 @@
+{
+	"name": "ls_dbw_aqi_md_dev",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureDatabricks",
+		"typeProperties": {
+			"domain": "https://adb-7405604871412804.4.azuredatabricks.net",
+			"accessToken": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "ls_keyvault_aqi",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "databricks-pat",
+				"secretVersion": "89362b4d6cca4aeaa3b9092fe8e03a5a"
+			},
+			"newClusterNodeType": "Standard_D2ds_v6",
+			"newClusterNumOfWorker": "0",
+			"newClusterSparkConf": {
+				"spark.databricks.cluster.profile": "singleNode",
+				"spark.master": "local[*]"
+			},
+			"newClusterCustomTags": {
+				"ResourceClass": "SingleNode"
+			},
+			"newClusterSparkEnvVars": {
+				"PYSPARK_PYTHON": "/databricks/python3/bin/python3"
+			},
+			"newClusterVersion": "17.3.x-scala2.13",
+			"clusterOption": "Fixed",
+			"newClusterInitScripts": []
+		}
+	}
+}

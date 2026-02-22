@@ -1,0 +1,9 @@
+{
+	"name": "adf-aqi-md-dev",
+	"location": "centralindia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "d8b4f85d-6a18-4546-a688-bda8ec416904",
+		"tenantId": "1ba3954a-c17a-4591-9a4a-6aa353016caf"
+	}
+}

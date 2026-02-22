@@ -1,0 +1,24 @@
+{
+	"name": "ds_adls_bronze_json",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_adls_aqi_medallion",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "raw_data.json",
+				"folderPath": {
+					"value": "cpcb_aqi/@{formatDateTime(utcnow(), 'yyyy/MM/dd')}",
+					"type": "Expression"
+				},
+				"fileSystem": "bronze"
+			}
+		},
+		"schema": {}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
