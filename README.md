@@ -20,6 +20,7 @@ graph LR
     classDef azure fill:#0072C6,stroke:#fff,stroke-width:2px,color:#fff;
     classDef source fill:#2ca02c,stroke:#fff,stroke-width:2px,color:#fff;
     classDef storage fill:#f28f21,stroke:#fff,stroke-width:2px,color:#fff;
+    classDef bi fill:#F2C811,stroke:#333,stroke-width:2px,color:#333;
 
     %% External Source
     API(External AQI API):::source
@@ -39,7 +40,11 @@ graph LR
             Silver[(Silver Layer\n*Clean Delta*)]:::storage
             Gold[(Gold Layer\n*Aggregated Delta*)]:::storage
         end
+        
+        SYN(Azure Synapse Analytics\n*SQL Views*):::azure
     end
+    
+    PBI(Power BI\n*Dashboards*):::bi
 
     %% Data & Control Flows
     ADF --1. Get Token--> KV
@@ -53,6 +58,10 @@ graph LR
     DBX --Aggregate & Write--> Gold
     
     DBX -.-> NAT -.-> API
+    
+    Gold -.->|Read by| SYN
+    SYN --DirectQuery--> PBI
+
     style VNet fill:#ececec,stroke:#ccc,stroke-dasharray: 5 5
     style NAT stroke-dasharray: 5 5
 ```
