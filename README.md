@@ -5,6 +5,7 @@ This project is an end-to-end data engineering pipeline built on Microsoft Azure
 
 ## 🏗️ Architecture & Tech Stack
 
+```mermaid
 %%{init: {'theme': 'neutral', 'themeVariables': { 'fontSize': '14px', 'fontFamily': 'arial'}}}%%
 graph LR
     %% Define nodes and styles
@@ -46,6 +47,7 @@ graph LR
     DBX -.-> NAT -.-> API
     style VNet fill:#ececec,stroke:#ccc,stroke-dasharray: 5 5
     style NAT stroke-dasharray: 5 5
+```
 
 * **Orchestration:** Azure Data Factory (ADF)
 * **Compute / Transformation:** Azure Databricks (PySpark)
