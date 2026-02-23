@@ -67,6 +67,10 @@ graph LR
 ```
 
 ## ⚙️ Data Flow 
+
+### 🚀 Pipeline Orchestration (ADF View)
+![ADF Pipeline View](assets/pipeline-view.png)
+
 1. **Ingestion (Bronze):** An ADF pipeline retrieves the API key securely from Azure Key Vault, then uses a Copy Data activity to pull raw JSON data from the AQI REST API and lands it into the ADLS Gen2 Bronze container.
 2. **Cleansing (Silver):** An ADF Databricks Notebook Activity triggers a PySpark cluster to read the raw JSON, flatten nested structures, handle missing values, and enforce schema before writing to the Silver container as Delta tables.
 3. **Aggregation (Gold):** A final PySpark notebook aggregates the clean data (e.g., daily AQI averages, geographical grouping) to prepare it for business intelligence tools.
